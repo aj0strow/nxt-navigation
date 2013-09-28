@@ -94,10 +94,25 @@ public class Odometer implements TimerListener {
 		synchronized (lock) { this.theta = normalize(theta); }
 	}
 	
+	public void incrX(double dx) {
+		synchronized (lock) { this.x += dx; }
+	}
+	
+	public void incrY(double dy) {
+		synchronized (lock) { this.y += dy; }
+	}
+	
+	public void incrTheta(double dtheta) {
+		synchronized (lock) { 
+			this.theta = normalize(theta + dtheta);
+		}
+	}
+
+
+	
 	private static double normalize(double angle) {
 	   double normalized = angle % (2 * Math.PI);
 	   if (normalized < 0) normalized += 2 * Math.PI;
 	   return normalized;
 	}
-	
 }
