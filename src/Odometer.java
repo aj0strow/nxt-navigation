@@ -14,6 +14,8 @@ public class Odometer implements TimerListener {
 	private double radius, separation;
 	private final NXTRegulatedMotor leftMotor, rightMotor;
 	
+	private int leftCount, rightCount;
+	
 	private Object lock;
 	
 	// radius: wheel radius (cm)
@@ -21,38 +23,26 @@ public class Odometer implements TimerListener {
 	public Odometer(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double radius, double separation) {
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
+		
 		this.radius = radius;
 		this.separation = separation;
+		
 		this.lock = new Object();
+		this.leftCount = 0;
+		this.rightCount = 0;
 	}
 		
 	public void timedOut() {
-		
-		/*			
 		int newLeftCount = leftMotor.getTachoCount();
 		int newRightCount = rightMotor.getTachoCount();
-						
+		
 		int deltaLeftCount = newLeftCount - leftCount;
 		int deltaRightCount = newRightCount - rightCount;
-			
-		leftCount = newLeftCount;
-		rightCount = newRightCount;
-			
-		double leftArcDistance = arcDistance(deltaLeftCount);
-		double rightArcDistance = arcDistance(deltaRightCount);
-			
-		double deltaTheta = (leftArcDistance - rightArcDistance) / separation;
-		double displacement = (leftArcDistance + rightArcDistance) / 2.0;
-			
-		double currentTheta = getTheta();
-			
-		double deltaX = displacement * Math.cos(currentTheta + deltaTheta / 2);
-		double deltaY = displacement * Math.sin(currentTheta + deltaTheta / 2);
-			
-		setX(getX() + deltaX);
-		setY(getY() + deltaY);
-		setTheta(currentTheta + deltaTheta);
-		*/		
+		
+		updatePosition(deltaLeftCount, deltaRightCount);
+		
+		this.leftCount = newLeftCount;
+		this.rightCount = newRightCount;
 	}
 	
 	public double[] getPosition() {
@@ -107,8 +97,27 @@ public class Odometer implements TimerListener {
 			this.theta = normalize(theta + dtheta);
 		}
 	}
-
-
+	
+	private void updatePosition(int deltaLeftCount, int deltaRightCount) {
+		double leftArcDistance = arcDistance(deltaLeftCount);
+		double rightArcDistance = arcDistance(deltaRightCount);
+			
+		double dTheta = (leftArcDistance - rightArcDistance) / separation;
+		double displacement = (leftArcDistance + rightArcDistance) / 2.0;
+			
+		double currentTheta = getTheta();
+			
+		double dx = displacement * Math.cos(currentTheta + dTheta / 2);
+		double dy = displacement * Math.sin(currentTheta + dTheta / 2);
+			
+		incrX(dx);
+		incrY(dy);
+		incrTheta(dTheta);
+	}
+		
+	private double arcDistance(int deltaTachometerCount) {
+		return Math.toRadians(deltaTachometerCount) * radius;
+	}
 	
 	private static double normalize(double angle) {
 	   double normalized = angle % (2 * Math.PI);
