@@ -14,6 +14,8 @@ public class Odometer implements TimerListener {
 	private double radius, separation;
 	private final NXTRegulatedMotor leftMotor, rightMotor;
 	
+	private Object lock;
+	
 	// radius: wheel radius (cm)
 	// separation: wheen separation from middle of tires (cm)
 	public Odometer(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double radius, double separation) {
@@ -21,6 +23,7 @@ public class Odometer implements TimerListener {
 		this.rightMotor = rightMotor;
 		this.radius = radius;
 		this.separation = separation;
+		this.lock = new Object();
 	}
 		
 	public void timedOut() {
@@ -52,5 +55,31 @@ public class Odometer implements TimerListener {
 		*/		
 	}
 	
+	public double[] getPosition() {
+		double[] position;
+		synchronized (lock) {
+			position = new double[]{ x, y, theta };
+		}
+		return position;
+	}
+
+	public double getX() {
+		double result;
+		synchronized (lock) { result = x; }
+		return result;
+	}
+
+	public double getY() {
+		double result;
+		synchronized (lock) { result = y; }
+		return result;
+	}
+
+	// 0 <= theta < 2π
+	public double getTheta() {
+		double result;
+		synchronized (lock) { result = theta; }
+		return result;
+	}
 	
 }
