@@ -20,12 +20,12 @@ public class Odometer implements TimerListener {
 	
 	// radius: wheel radius (cm)
 	// separation: wheen separation from middle of tires (cm)
-	public Odometer(NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor, double radius, double separation) {
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
+	public Odometer(Configuration configuration) {
+		this.leftMotor = configuration.leftMotor;
+		this.rightMotor = configuration.rightMotor;
 		
-		this.radius = radius;
-		this.separation = separation;
+		this.radius = configuration.radius;
+		this.separation = configuration.separation;
 		
 		this.lock = new Object();
 		this.leftCount = 0;

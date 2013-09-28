@@ -4,6 +4,7 @@ public class Lab3 {
 	
 	private static double WHEEL_RADIUS = 2.8;
 	private static double WHEEL_SEPARATION = 16.0;
+	private static NXTRegulatedMotor LEFT_MOTOR = Motor.A, RIGHT_MOTOR = Motor.B;
 	
 	public static void main(String[] args) {
 		int buttonChoice;
@@ -16,10 +17,11 @@ public class Lab3 {
 		do {
 			buttonChoice = Button.waitForAnyPress();
 		} while(buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT);
-				
+		
+		Configuration configuration = configure();
+		Operator operator = new Operator(configuration);
+						
 		if (buttonChoice == Button.ID_LEFT) {
-			Operator operator = new Operator();
-			
 			operator.travelTo(60.0, 30.0);
 			waitFor(operator);
 			
@@ -31,10 +33,31 @@ public class Lab3 {
 			
 			operator.travelTo(60.0, 0.0);
 			waitFor(operator);
+		} else if (buttonChoice == Button.ID_RIGHT) {
+			operator.turnTo(Math.PI / 2);
+			waitFor(operator);
+			
+			operator.turnTo(Math.PI);
+			waitFor(operator);
+			
+			operator.turnTo(3 * Math.PI / 2);
+			waitFor(operator);
+			
+			operator.turnTo(2 * Math.PI);
+			waitFor(operator);
 		}
 		
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
 		System.exit(0);
+	}
+	
+	private static Configuration configure() {
+		Configuration config = new Configuration();
+		config.leftMotor = LEFT_MOTOR;
+		config.rightMotor = RIGHT_MOTOR;
+		config.radius = WHEEL_RADIUS;
+		config.separation = WHEEL_SEPARATION;
+		return config;
 	}
 	
 	private static void waitFor(Operator operator) {
