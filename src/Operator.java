@@ -39,7 +39,14 @@ public class Operator {
 	}
 
 	public void travelTo(double x, double y) {
+		double[] position = odometer.getPosition();
+		double dx = x - position[0], dy = y - position[1];
 		
+		double newTheta = 2 * Math.PI - Angle.normalize(Math.atan2(dy, dx));
+		turnTo(newTheta);
+		
+		double distance = Math.sqrt(dx * dx + dy * dy);
+		forward(distance);
 	}
 	
 	public void turnTo(double theta) {
@@ -47,15 +54,22 @@ public class Operator {
 		
 		double currentTheta = odometer.getTheta();
 		
-		double difference = theta - currentTheta;
-		if (difference < -Math.PI) {
-			difference += 2 * Math.PI;
-		} else if (difference > Math.PI) {
-			difference -= 2 * Math.PI;
+		double goingLeft = Angle.normalize(currentTheta - theta);
+		double goingRight = Angle.normalize(theta - currentTheta);
+		
+		if (goingLeft < goingRight) {
+			rotateLeft(goingLeft);
+		} else {
+			rotateRight(goingRight);
 		}
-		rotateRight(difference);
 		
 		this.navigating = false;
+	}
+	
+	private void forward(double distance) {
+		int amount = tachoDegrees(distance);
+		leftMotor.rotate(amount, true);
+		rightMotor.rotate(amount, false);
 	}
 	
 	private void rotateLeft(double radians) {
@@ -76,7 +90,7 @@ public class Operator {
 		leftMotor.setSpeed(ROTATE_SPEED);
 		rightMotor.setSpeed(ROTATE_SPEED);
 	}
-	
+		
 	private int tachoAmount(double radians) {
 		return tachoDegrees(arcLength(radians));
 	}

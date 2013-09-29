@@ -34,17 +34,7 @@ public class Lab3 {
 			operator.travelTo(60.0, 0.0);
 			waitFor(operator);
 		} else if (buttonChoice == Button.ID_RIGHT) {
-			operator.turnTo(Math.PI / 2);
-			waitFor(operator);
-			
-			operator.turnTo(Math.PI);
-			waitFor(operator);
-			
-			operator.turnTo(3 * Math.PI / 2);
-			waitFor(operator);
-			
-			operator.turnTo(2 * Math.PI);
-			waitFor(operator);
+
 		}
 		
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
@@ -63,7 +53,7 @@ public class Lab3 {
 	private static void waitFor(Operator operator) {
 		while (operator.isNavigating()) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(1000);
 			} catch(InterruptedException e) {}
 		}
 	}

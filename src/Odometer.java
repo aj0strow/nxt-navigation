@@ -1,5 +1,6 @@
 import lejos.util.TimerListener;
 import lejos.nxt.NXTRegulatedMotor;
+import lejos.nxt.LCD;
 
 /*
 *  the Odometer is programmed for theta = 0.0 rad corresponding to the
@@ -30,6 +31,12 @@ public class Odometer implements TimerListener {
 		this.lock = new Object();
 		this.leftCount = 0;
 		this.rightCount = 0;
+		
+		this.x = 0.0;
+		this.y = 0.0;
+		
+		// starts looking + y axis
+		this.theta = 3 * Math.PI / 2;
 	}
 		
 	public void timedOut() {
@@ -81,7 +88,7 @@ public class Odometer implements TimerListener {
 	}
 	
 	public void setTheta(double theta) {
-		synchronized (lock) { this.theta = normalize(theta); }
+		synchronized (lock) { this.theta = Angle.normalize(theta); }
 	}
 	
 	public void incrX(double dx) {
@@ -94,7 +101,7 @@ public class Odometer implements TimerListener {
 	
 	public void incrTheta(double dtheta) {
 		synchronized (lock) { 
-			this.theta = normalize(theta + dtheta);
+			this.theta = Angle.normalize(theta + dtheta);
 		}
 	}
 	
@@ -111,17 +118,17 @@ public class Odometer implements TimerListener {
 		double dy = displacement * Math.sin(currentTheta + dTheta / 2);
 			
 		incrX(dx);
-		incrY(dy);
+		incrY(-dy);
 		incrTheta(dTheta);
+		
+		LCD.clear();
+		LCD.drawString("x: " + getX(), 0, 0);
+		LCD.drawString("y: " + getY(), 0, 1);
+		LCD.drawString("t: " + getTheta(), 0, 2);
 	}
 		
 	private double arcDistance(int deltaTachometerCount) {
 		return Math.toRadians(deltaTachometerCount) * radius;
 	}
-	
-	private static double normalize(double angle) {
-	   double normalized = angle % (2 * Math.PI);
-	   if (normalized < 0) normalized += 2 * Math.PI;
-	   return normalized;
-	}
+
 }
