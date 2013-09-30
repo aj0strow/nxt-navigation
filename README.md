@@ -3,22 +3,22 @@ nxt-navigation
 
 > Lab 3 of ECSE 211 at McGill, by AJ Ostrow and Vitaliy Kuzmin, Fall 2013. 
 
-### shell commands
+### bin commands
 
 To clean the project:
 
 ```
-$ source clean.sh
+$ bin/clean
 ```
 
 To clean and compile:
 
 ```
-$ source compile.sh
+$ bin/compile
 ```
 
 To clean, compile and uplaod to NXT brick:
 
 ```
-$ source upload.sh
+$ bin/upload
 ```
