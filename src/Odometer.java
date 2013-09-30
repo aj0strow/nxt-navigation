@@ -29,12 +29,12 @@ public class Odometer implements TimerListener {
 		this.radius = configuration.radius;
 		this.separation = configuration.separation;
 		
-		this.lock = new Object();
 		this.leftCount = 0;
 		this.rightCount = 0;
 		
 		// theta: looking at + y axis
 		this.position = new Position(0.0, 0.0, 3 * Math.PI / 2);
+		this.lock = new Object();
 	}
 		
 	public void timedOut() {
@@ -49,6 +49,8 @@ public class Odometer implements TimerListener {
 		this.leftCount = newLeftCount;
 		this.rightCount = newRightCount;
 	}
+	
+	// get, set, incr position
 	
 	public Position getPosition() {
 		Position position = null;
@@ -72,6 +74,8 @@ public class Odometer implements TimerListener {
 		}
 	}
 	
+	// get x, y, theta
+	
 	public double getX() {
 		double result;
 		synchronized (lock) { result = position.x; }
@@ -91,6 +95,8 @@ public class Odometer implements TimerListener {
 		return result;
 	}
 	
+	// set x, y, theta
+	
 	public void setX(double x) {
 		synchronized (lock) { this.position.x = x; }
 	}
@@ -102,6 +108,8 @@ public class Odometer implements TimerListener {
 	public void setTheta(double theta) {
 		synchronized (lock) { this.position.theta = Angle.normalize(theta); }
 	}
+	
+	// incr x, y, theta
 	
 	public void incrX(double dx) {
 		synchronized (lock) { this.position.x += dx; }
@@ -116,6 +124,8 @@ public class Odometer implements TimerListener {
 			this.position.theta = Angle.normalize(position.theta + dtheta);
 		}
 	}
+	
+	
 	
 	private void updatePosition(int deltaLeftCount, int deltaRightCount) {
 		double leftArcDistance = arcDistance(deltaLeftCount);
@@ -133,6 +143,11 @@ public class Odometer implements TimerListener {
 		displayPosition();
 	}
 	
+	// tacho counts are tachometer-measured angle rotations in degrees
+	private double arcDistance(int deltaTachoCount) {
+		return Math.toRadians(deltaTachoCount) * radius;
+	}
+	
 	private void displayPosition() {
 		Position position = getPosition();
 		
@@ -141,9 +156,4 @@ public class Odometer implements TimerListener {
 		LCD.drawString("y: " + position.y, 0, 1);
 		LCD.drawString("t: " + position.theta, 0, 2);
 	}
-		
-	private double arcDistance(int deltaTachometerCount) {
-		return Math.toRadians(deltaTachometerCount) * radius;
-	}
-
 }

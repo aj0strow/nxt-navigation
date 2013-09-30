@@ -39,18 +39,16 @@ public class Operator {
 	}
 
 	public void travelTo(Point point) {
+		this.navigating = true;
+		
 		Position position = odometer.getPosition();
 		turnTo(position.angleTo(point));
 		forward(position.distanceTo(point));
-	}
-	
-	public void travelTo(double x, double y) {
-		travelTo(new Point(x, y));
+		
+		this.navigating = false;
 	}
 	
 	public void turnTo(double theta) {
-		this.navigating = true;
-		
 		double currentTheta = odometer.getTheta();
 		
 		double goingLeft = Angle.normalize(currentTheta - theta);
@@ -61,8 +59,6 @@ public class Operator {
 		} else {
 			rotateRight(goingRight);
 		}
-		
-		this.navigating = false;
 	}
 	
 	private void forward(double distance) {
