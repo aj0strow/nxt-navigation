@@ -11,7 +11,8 @@ public class Odometer implements TimerListener {
 	// 25ms is the suggested period between readings
 	public static final int PERIOD = 25;
 	
-	private double x, y, theta;
+	private Position position;
+
 	private double radius, separation;
 	private final NXTRegulatedMotor leftMotor, rightMotor;
 	
@@ -32,11 +33,8 @@ public class Odometer implements TimerListener {
 		this.leftCount = 0;
 		this.rightCount = 0;
 		
-		this.x = 0.0;
-		this.y = 0.0;
-		
-		// starts looking + y axis
-		this.theta = 3 * Math.PI / 2;
+		// theta: looking at + y axis
+		this.position = new Position(0.0, 0.0, 3 * Math.PI / 2);
 	}
 		
 	public void timedOut() {
@@ -52,56 +50,70 @@ public class Odometer implements TimerListener {
 		this.rightCount = newRightCount;
 	}
 	
-	public double[] getPosition() {
-		double[] position;
+	public Position getPosition() {
+		Position position = null;
 		synchronized (lock) {
-			position = new double[]{ x, y, theta };
+			position = this.position.clone();
 		}
 		return position;
 	}
-
+	
+	public void setPosition(Position position) {
+		synchronized (lock) {
+			this.position = position.clone();
+		}
+	}
+	
+	public void incrPosition(double dx, double dy, double dtheta) {
+		synchronized (lock) {
+			this.position.x += dx;
+			this.position.y += dy;
+			this.position.theta = Angle.normalize(this.position.theta + dtheta);
+		}
+	}
+	
 	public double getX() {
 		double result;
-		synchronized (lock) { result = x; }
+		synchronized (lock) { result = position.x; }
 		return result;
 	}
 
 	public double getY() {
 		double result;
-		synchronized (lock) { result = y; }
+		synchronized (lock) { result = position.y; }
 		return result;
 	}
 
 	// 0 <= theta < 2π
 	public double getTheta() {
 		double result;
-		synchronized (lock) { result = theta; }
+		synchronized (lock) { result = position.theta; }
 		return result;
 	}
 	
 	public void setX(double x) {
-		synchronized (lock) { this.x = x; }
+		synchronized (lock) { this.position.x = x; }
 	}
 
 	public void setY(double y) {
-		synchronized (lock) { this.y = y; }
+		synchronized (lock) { this.position.y = y; }
 	}
 	
 	public void setTheta(double theta) {
-		synchronized (lock) { this.theta = Angle.normalize(theta); }
+		synchronized (lock) { this.position.theta = Angle.normalize(theta); }
 	}
 	
 	public void incrX(double dx) {
-		synchronized (lock) { this.x += dx; }
+		synchronized (lock) { this.position.x += dx; }
 	}
 	
 	public void incrY(double dy) {
-		synchronized (lock) { this.y += dy; }
+		synchronized (lock) { this.position.y += dy; }
 	}
 	
 	public void incrTheta(double dtheta) {
 		synchronized (lock) { 
-			this.theta = Angle.normalize(theta + dtheta);
+			this.position.theta = Angle.normalize(position.theta + dtheta);
 		}
 	}
 	
@@ -109,22 +121,25 @@ public class Odometer implements TimerListener {
 		double leftArcDistance = arcDistance(deltaLeftCount);
 		double rightArcDistance = arcDistance(deltaRightCount);
 			
-		double dTheta = (leftArcDistance - rightArcDistance) / separation;
+		double dtheta = (leftArcDistance - rightArcDistance) / separation;
 		double displacement = (leftArcDistance + rightArcDistance) / 2.0;
-			
+		
 		double currentTheta = getTheta();
 			
-		double dx = displacement * Math.cos(currentTheta + dTheta / 2);
-		double dy = displacement * Math.sin(currentTheta + dTheta / 2);
-			
-		incrX(dx);
-		incrY(-dy);
-		incrTheta(dTheta);
+		double dx = displacement * Math.cos(currentTheta + dtheta / 2);
+		double dy = displacement * Math.sin(currentTheta + dtheta / 2);
+		
+		incrPosition(dx, -dy, dtheta);
+		displayPosition();
+	}
+	
+	private void displayPosition() {
+		Position position = getPosition();
 		
 		LCD.clear();
-		LCD.drawString("x: " + getX(), 0, 0);
-		LCD.drawString("y: " + getY(), 0, 1);
-		LCD.drawString("t: " + getTheta(), 0, 2);
+		LCD.drawString("x: " + position.x, 0, 0);
+		LCD.drawString("y: " + position.y, 0, 1);
+		LCD.drawString("t: " + position.theta, 0, 2);
 	}
 		
 	private double arcDistance(int deltaTachometerCount) {

@@ -38,15 +38,14 @@ public class Operator {
 		return navigating;
 	}
 
+	public void travelTo(Point point) {
+		Position position = odometer.getPosition();
+		turnTo(position.angleTo(point));
+		forward(position.distanceTo(point));
+	}
+	
 	public void travelTo(double x, double y) {
-		double[] position = odometer.getPosition();
-		double dx = x - position[0], dy = y - position[1];
-		
-		double newTheta = 2 * Math.PI - Angle.normalize(Math.atan2(dy, dx));
-		turnTo(newTheta);
-		
-		double distance = Math.sqrt(dx * dx + dy * dy);
-		forward(distance);
+		travelTo(new Point(x, y));
 	}
 	
 	public void turnTo(double theta) {
@@ -75,15 +74,12 @@ public class Operator {
 	private void rotateLeft(double radians) {
 		setRotateSpeed();
 		int amount = tachoAmount(radians);
-		leftMotor.rotate(- amount, true);
+		leftMotor.rotate(-amount, true);
 		rightMotor.rotate(amount, false);
 	}
 	
 	private void rotateRight(double radians) {
-		setRotateSpeed();
-		int amount = tachoAmount(radians);
-		leftMotor.rotate(amount, true);
-		rightMotor.rotate(- amount, false);
+		rotateLeft(-radians);
 	}
 	
 	private void setRotateSpeed() {

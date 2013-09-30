@@ -22,17 +22,13 @@ public class Lab3 {
 		Operator operator = new Operator(configuration);
 						
 		if (buttonChoice == Button.ID_LEFT) {
-			operator.travelTo(60.0, 30.0);
-			waitFor(operator);
+			Point[] destinations = new Point[]{ new Point(60.0, 30.0),
+				  new Point(30.0, 30.0), new Point(30.0, 60.0), new Point(60.0, 0.0) };
 			
-			operator.travelTo(30.0, 30.0);
-			waitFor(operator);
-			
-			operator.travelTo(30.0, 60.0);
-			waitFor(operator);
-			
-			operator.travelTo(60.0, 0.0);
-			waitFor(operator);
+		   for (Point point : destinations) {
+				operator.travelTo(point);
+				waitFor(operator);
+			}
 		} else if (buttonChoice == Button.ID_RIGHT) {
 
 		}
