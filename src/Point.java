@@ -16,4 +16,8 @@ public class Point {
 		double arctan = Math.atan2(point.y - y, point.x - x);
 		return 2 * Math.PI - Angle.normalize(arctan);
 	}
+	
+	public Point clone() {
+		return new Point(x, y);
+	}
 }

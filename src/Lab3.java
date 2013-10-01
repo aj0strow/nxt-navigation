@@ -1,4 +1,5 @@
 import lejos.nxt.*;
+import lejos.util.Timer;
 
 public class Lab3 {
 	
@@ -7,6 +8,8 @@ public class Lab3 {
 	private static NXTRegulatedMotor LEFT_MOTOR = Motor.A, RIGHT_MOTOR = Motor.B;
 	
 	public static void main(String[] args) {
+		Button.ESCAPE.addButtonListener(new ExitListener());
+		
 		int buttonChoice;
 		
 		LCD.clear();
@@ -20,8 +23,11 @@ public class Lab3 {
 		
 		Configuration configuration = configure();
 		Operator operator = new Operator(configuration);
+		Timer timer = new Timer(Operator.PERIOD, operator);
 						
 		if (buttonChoice == Button.ID_LEFT) {
+			timer.start();
+			
 			Point[] destinations = new Point[]{ new Point(60.0, 30.0),
 				  new Point(30.0, 30.0), new Point(30.0, 60.0), new Point(60.0, 0.0) };
 			
@@ -30,11 +36,14 @@ public class Lab3 {
 				waitFor(operator);
 			}
 		} else if (buttonChoice == Button.ID_RIGHT) {
-
+			timer.start();
+			
+			Point[] destinations = new Point[]{ new Point(0.0, 45.0) };
+		   for (Point point : destinations) {
+				operator.travelTo(point);
+				waitFor(operator);
+			}
 		}
-		
-		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
-		System.exit(0);
 	}
 	
 	private static Configuration configure() {
@@ -43,6 +52,7 @@ public class Lab3 {
 		config.rightMotor = RIGHT_MOTOR;
 		config.radius = WHEEL_RADIUS;
 		config.separation = WHEEL_SEPARATION;
+		config.sensorPort = SensorPort.S1;
 		return config;
 	}
 	
