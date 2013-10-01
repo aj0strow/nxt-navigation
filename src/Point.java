@@ -1,3 +1,8 @@
+/*
+*  Point is the cartesian coordinates of a place on
+*  the board (x, y).
+*/
+
 public class Point {
 	public double x;
 	public double y;

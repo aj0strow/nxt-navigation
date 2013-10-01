@@ -1,3 +1,7 @@
+/*
+*  Position is a Point with an angle (theta).
+*/
+
 public class Position extends Point {
 	public double theta;
 	

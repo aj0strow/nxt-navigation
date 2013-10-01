@@ -1,6 +1,10 @@
 import lejos.nxt.ButtonListener;
 import lejos.nxt.Button;
 
+/*
+*  Button listener that exits the program. Used for the escape button.
+*/
+
 public class ExitListener implements ButtonListener {
 	
 	public ExitListener() {}
