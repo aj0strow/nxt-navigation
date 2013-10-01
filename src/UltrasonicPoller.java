@@ -25,7 +25,7 @@ public class UltrasonicPoller implements TimerListener {
 	private boolean filterToMax = true;
 	
 	// saved distance in case the distance from the sensor is filtered
-	private int distance;
+	private int distance = MAX_DISTANCE;
 	private Object lock;
 	
 	private UltrasonicSensor sensor;

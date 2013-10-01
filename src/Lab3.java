@@ -38,12 +38,14 @@ public class Lab3 {
 		} else if (buttonChoice == Button.ID_RIGHT) {
 			timer.start();
 			
-			Point[] destinations = new Point[]{ new Point(0.0, 45.0) };
+			Point[] destinations = new Point[]{ new Point(0.0, 60.0), new Point(60.0, 0.0) };
 		   for (Point point : destinations) {
 				operator.travelTo(point);
 				waitFor(operator);
 			}
 		}
+		
+		Button.waitForAnyPress();
 	}
 	
 	private static Configuration configure() {
